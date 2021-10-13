@@ -21,7 +21,6 @@ export default {
   },
   methods: {
     handleAddTarefa() {
-      // this.$store.commit('adicionarTarefa', this.campoInput)
       this.$store.dispatch("adicionarTarefa", this.campoInput);
       this.campoInput = null;
     },
