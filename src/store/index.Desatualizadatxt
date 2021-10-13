@@ -1,0 +1,100 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+
+import Localbase from 'localbase'
+let db = new Localbase('db')
+
+
+Vue.use(Vuex)
+
+export default new Vuex.Store({
+  state: {
+    tarefas: [
+      // {id:1, title: "Ir ao mercado", concluido: false },
+      // {id:2,  title: "Conprar ração para o cachorro", concluido: false },
+      // {id:3, title: "Pagar a conta de água", concluido: false },
+    ],
+  },
+  mutations: {
+    buscaTarefas(state) {
+      db.collection('tarefas').get().then(tarefasDB => {
+        state.tarefas = tarefasDB
+      })
+    },
+
+    //Passou a ser feito no action
+    
+      adicionarTarefa(state, title) {
+        db.collection('tarefas').add({
+          id: new Date().getTime(),
+          title,
+          concluido: false
+        })
+
+        // if(title){
+        //   state.tarefas.push({
+        //     id: new Date().getTime(),
+        //     title,
+        //     concluido: false
+        //   })
+        // }
+      },
+
+      removeTarefa(state, id) {
+        state.tarefas = state.tarefas.filter(tarefa => tarefa.id !== id)
+      },
+
+      atualizarTarefa(state, upTarefa) {
+        db.collection('tarefas').doc({ id: upTarefa.id }).update({
+          title: upTarefa.title
+        })
+
+        // let tarefa = state.tarefas.filter(tarefa => tarefa.id == upTarefa.id)[0]
+        // console.log(tarefa)
+        // tarefa.title = upTarefa.title
+      }
+    
+  },
+  actions: {
+    //----FORMA GAMBIARRA ----
+    /*
+    async adicionarTarefa({commit}, title){
+      await commit('adicionarTarefa', title)
+      await commit('buscaTarefas')
+    },
+
+     
+     async atualizarTarefa({commit}, tarefa){
+       await commit('atualizarTarefa', tarefa)
+       await commit('buscaTarefas')
+     },*/
+
+    //----FORMA CORRETA ----
+    adicionarTarefa({ commit }, title) {
+      db.collection('tarefas').add({
+        id: new Date().getTime(),
+        title,
+        concluido: false
+      }).then(() => {
+        commit('buscaTarefas')
+      })
+    },
+
+    atualizarTarefa({ commit }, upTarefa) {
+      db.collection('tarefas').doc({ id: upTarefa.id }).update({
+        title: upTarefa.title
+      }).then(() => {
+        commit('buscaTarefas')
+      })
+    },
+
+    removeTarefa({commit}, idTarefa){
+      db.collection('tarefas').doc({ id: idTarefa }).delete()
+      .then(()=>{
+        commit('buscaTarefas')
+      })
+    }
+  },
+  modules: {
+  }
+})
