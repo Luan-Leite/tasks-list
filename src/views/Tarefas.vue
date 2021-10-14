@@ -1,5 +1,12 @@
 <template>
   <div>
+
+    <dir 
+    v-if="$store.state.tarefas.length >= 1"
+    class="text-h5 pt-8 pb-6 text-center primary--text">
+      Lista de tarefas
+    </dir>
+
     <ListaDeTarefas />
     <div
     class="mt-16 animate__animated animate__slideInDown"
@@ -28,3 +35,10 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+#title{
+  padding: 10px 0;
+  text-align: center;
+}
+</style>
